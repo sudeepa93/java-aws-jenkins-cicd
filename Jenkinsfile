@@ -54,7 +54,7 @@ pipeline {
             steps {
                 // Optionally, push the Docker image to a registry
                 script {
-                    docker.withRegistry('http://localhost:5000/v2', 'docker-credentials-id') {
+                    docker.withRegistry('http://localhost:5000/v2', 'docker-registry-credentials') {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
                     }
                 }
