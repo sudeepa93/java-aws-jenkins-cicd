@@ -5,7 +5,7 @@ FROM openjdk:11-jdk-slim
 WORKDIR /app
 
 # Copy the Spring Boot application JAR file to the container
-COPY target/HelloWorldApp.jar app.jar
+COPY target/HelloWorldApp-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port your application runs on (default for Spring Boot is 8080)
 EXPOSE 8080
