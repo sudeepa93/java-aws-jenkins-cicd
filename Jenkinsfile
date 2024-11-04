@@ -59,7 +59,7 @@ pipeline {
             steps {
                 script {
                     // Tag the Docker image for ECR Public
-                    sh "docker tag my-app:latest public.ecr.aws/${AWS_ACCOUNT_ID}/${ECR_REPO}:${IMAGE_TAG}"
+                    sh "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} public.ecr.aws/${AWS_ACCOUNT_ID}/${ECR_REPO}:${IMAGE_TAG}"
                 }
             }
         }
