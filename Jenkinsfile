@@ -8,8 +8,13 @@ pipeline {
     }
     
     environment {
+    	AWS_REGION = 'us-east-1'
+        AWS_ACCOUNT_ID = '585768181909'
+        ECR_REPO = 'my-test-repo-1'
+        IMAGE_TAG = 'latest'  // Use ${env.BUILD_NUMBER} for unique tags if preferred
+    
         DOCKER_IMAGE_NAME = 'hello-world-app-image-name'  // Set your Docker image name
-        DOCKER_TAG = '1.0.0'  // Optionally set a tag for your image
+        DOCKER_TAG = ${env.BUILD_NUMBER}  // Optionally set a tag for your image
     }
     
 
@@ -50,15 +55,42 @@ pipeline {
             }
         }
         
-        stage('Publish Docker Image') {
+        stage('Tag Docker Image') {
             steps {
-                // Optionally, push the Docker image to a registry
                 script {
-                    docker.withRegistry('http://localhost:5000/v2', 'docker-registry-credentials') {
-                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
-                    }
+                    // Tag the Docker image for ECR Public
+                    sh "docker tag my-app:latest public.ecr.aws/${AWS_ACCOUNT_ID}/${ECR_REPO}:${IMAGE_TAG}"
                 }
             }
         }
+
+        stage('Login to AWS ECR Public') {
+            steps {
+                withCredentials([aws(credentialsId: 'aws-ecr-public-credentials', region: "${AWS_REGION}")]) {
+                    // Log in to ECR Public
+                    sh "aws ecr-public get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin public.ecr.aws"
+                }
+            }
+        }
+
+        stage('Push Docker Image to ECR Public') {
+            steps {
+                script {
+                    // Push the image to ECR Public
+                    sh "docker push public.ecr.aws/${AWS_ACCOUNT_ID}/${ECR_REPO}:${IMAGE_TAG}"
+                }
+            }
+        }
+        
+        //stage('Publish Docker Image') {
+        //    steps {
+        //        // Optionally, push the Docker image to a registry
+        //        script {
+        //            docker.withRegistry('http://localhost:5000/v2', 'docker-registry-credentials') {
+        //                docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
+        //            }
+        //        }
+        //    }
+        //}
     }
 }
