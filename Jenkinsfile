@@ -58,17 +58,18 @@ pipeline {
         stage('Tag Docker Image') {
             steps {
                 script {
-                    // Tag the Docker image for ECR Public
-                    sh "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} public.ecr.aws/${AWS_ACCOUNT_ID}/${ECR_REPO}:${IMAGE_TAG}"
+                    // Tag the Docker image for ECR
+                    sh "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
                 }
             }
         }
 
-        stage('Login to AWS ECR Public') {
+        stage('Login to AWS ECR') {
             steps {
                 withCredentials([aws(credentialsId: 'aws-jenkins-credentials', region: "${AWS_REGION}")]) {
-                    // Log in to ECR Public
-                    sh "aws ecr-public get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin public.ecr.aws"
+                    // Log in to ECR Private
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                
                 }
             }
         }
@@ -76,8 +77,8 @@ pipeline {
         stage('Push Docker Image to ECR Public') {
             steps {
                 script {
-                    // Push the image to ECR Public
-                    sh "docker push public.ecr.aws/${AWS_ACCOUNT_ID}/${ECR_REPO}:${IMAGE_TAG}"
+                    // Push the image to ECR
+                    sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
                 }
             }
         }
