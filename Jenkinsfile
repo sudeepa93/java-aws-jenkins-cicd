@@ -74,7 +74,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to ECR Public') {
+        stage('Push Docker Image to ECR') {
             steps {
                 script {
                     // Push the image to ECR
