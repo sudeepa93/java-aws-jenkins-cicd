@@ -14,7 +14,7 @@ pipeline {
         IMAGE_TAG = 'latest'  // Use ${env.BUILD_NUMBER} for unique tags if preferred
     
         DOCKER_IMAGE_NAME = 'hello-world-app-image-name'  // Set your Docker image name
-        DOCKER_TAG = ${env.BUILD_NUMBER}  // Optionally set a tag for your image
+        DOCKER_TAG = "${env.BUILD_NUMBER}"  // Optionally set a tag for your image
     }
     
 
