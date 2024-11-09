@@ -83,6 +83,30 @@ pipeline {
             }
         }
         
+         stage('Trigger Spinnaker Pipeline') {
+            steps {
+                script {
+                    def webhookUrl = "http://a4c3a4991a14348418c6b5d8c37bba9c-1658303132.us-east-1.elb.amazonaws.com/webhooks/webhook/java-aws-jenkins-cicd"
+                    
+                    // Sending the Jenkins build number and commit hash in the payload
+                    def response = httpRequest(
+                        url: webhookUrl,
+                        httpMode: 'POST',
+                        contentType: 'APPLICATION_JSON',
+                        requestBody: """
+                        {
+                            "build_number": "${BUILD_NUMBER}",
+                            "git_commit": "${GIT_COMMIT}",
+                            "branch": "${GIT_BRANCH}"
+                        }
+                        """,
+                        validResponseCodes: '200:500'
+                    )
+                    echo "Triggered Spinnaker pipeline: ${response}"
+                }
+            }
+        }
+        
         //stage('Publish Docker Image') {
         //    steps {
         //        // Optionally, push the Docker image to a registry
