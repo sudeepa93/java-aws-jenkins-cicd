@@ -95,9 +95,7 @@ pipeline {
                         contentType: 'APPLICATION_JSON',
                         requestBody: """
                         {
-                            "build_number": "${BUILD_NUMBER}",
-                            "git_commit": "${GIT_COMMIT}",
-                            "branch": "${GIT_BRANCH}"
+                            "buildStatus": "success"
                         }
                         """,
                         validResponseCodes: '200:500'
